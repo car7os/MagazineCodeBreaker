@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         configNavegador.setJavaScriptEnabled(true);
         configNavegador.setAllowUniversalAccessFromFileURLs(true);
         configNavegador.setAppCacheEnabled(true);
+        configNavegador.setDomStorageEnabled(true);
 
 
 
