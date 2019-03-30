@@ -34,28 +34,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        // Referencia a Classe que não deixa abrir o site em um navegador externo
         WebViewClientImpl webViewClient = new WebViewClientImpl(this);
 
 
-        // Variavel com a url do seu site
+        // Endereço do seu site
         String enderecoSite = "https://www.magazinevoce.com.br/magazinecodebreaker/";
 
         // configurando o WebView
         navegadorWeb = (WebView) findViewById(R.id.webview);
-        navegadorWeb.setWebViewClient(webViewClient);
-        navegadorWeb.loadUrl(enderecoSite);
+        navegadorWeb.setWebViewClient(webViewClient); // Ao clicar nos links, não deixa acessar um navegador externo, fazendo com que todas as operações permaneçam dentro do seu aplicativo
+
+        navegadorWeb.loadUrl(enderecoSite); // Carregar Site
+        // Ajustar Configurações
         WebSettings configNavegador = navegadorWeb.getSettings();
-        configNavegador.setJavaScriptEnabled(true);
-        configNavegador.setAllowUniversalAccessFromFileURLs(true);
-        configNavegador.setAppCacheEnabled(true);
-        configNavegador.setDomStorageEnabled(true);
+        configNavegador.setJavaScriptEnabled(true); // Acessar JavaScript
+        configNavegador.setAllowUniversalAccessFromFileURLs(true); // Permitir que o JavaScript acesse conteúdo de outras URLs, no caso da loje virtual, como o site já vem pronto, é melhor deixar ativo para não comprometer alguma funcionalidade
+        configNavegador.setAppCacheEnabled(true); // Ativa Chache
+        configNavegador.setDomStorageEnabled(true); // Ativa Acesso a Sites seguros, como, por exemplo SSL / https://
 
 
 
 
     }
 
+    // Ativa o Botão Voltar do Android
     @Override
     public boolean onKeyDown (int keyCode, KeyEvent event){
 
