@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("CAMERA PERMISSION", "GRANTED");
+                    Log.i("PERMISSION", "GRANTED");
 
                 } else if (grantResults[1] == PackageManager.PERMISSION_DENIED) {
                     //TODO tratar em caso de Denied
