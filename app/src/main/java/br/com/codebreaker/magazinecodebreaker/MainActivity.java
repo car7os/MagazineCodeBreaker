@@ -29,6 +29,7 @@ import android.view.KeyEvent;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+
 //+---------------------------------------------------------------------+
 //| Classe Principal
 //+---------------------------------------------------------------------+
@@ -111,13 +112,21 @@ public class MainActivity extends AppCompatActivity {
     private void requestPermissions() {
         String[] perms = {Manifest.permission.INTERNET};
 
-        int hasReadSMSPermission = ContextCompat.checkSelfPermission(this,Manifest.permission.INTERNET);
+        int hasReadSMSPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
 
         if (hasReadSMSPermission != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(perms, REQUEST_CODE_PERMISSION);
             return;
         }
     }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+
 }
 //+-------------------------------------------------------------------------------------------------------+
 //|                                                                    Referencias Bibliograficas         |
