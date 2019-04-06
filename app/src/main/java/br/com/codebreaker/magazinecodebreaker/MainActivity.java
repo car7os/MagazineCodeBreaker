@@ -18,14 +18,18 @@ package br.com.codebreaker.magazinecodebreaker;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PERMISSION = 100;
     private WebView navegadorWeb;
+    private SwipeRefreshLayout swipeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,14 @@ public class MainActivity extends AppCompatActivity {
         configNavegador.setAppCacheEnabled(true); // Ativa Cache
         configNavegador.setDomStorageEnabled(true); // Ativa Acesso a Sites seguros, como, por exemplo SSL / https://
 
+
+        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                navegadorWeb.reload();
+            }
+        });
 
     }
 
@@ -133,12 +146,59 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+
         super.onPause();
 
         // por motivo de segurança, todos os dados são apagados, assim ninguem acessa suas compras
-        ((ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
+        ((ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
+
     }
 
+
+    //+---------------------------------------------------------------------+
+//|                                               MagazineCodeBreaker   |
+//|                                        Copyright 2019, CodeBreaker  |
+//|                                      http://www.codebreaker.com.br  |
+//|                                                                     |
+//| Conteúdo retirado do site:                                          |
+//| https://www.androidpro.com.br/blog/desenvolvimento-android/webview-converter-site-aplicativo/
+//+---------------------------------------------------------------------+
+
+    /**
+     * Esta Classe faz com que toda a atividade do WebView permaneçam no próprio WebView.
+     * Ao clicar nos links, não deixa acessar um navegador externo, fazendo com que todas
+     * as operações permaneçam dentro do seu aplicativo
+     */
+
+
+    public class WebViewClientImpl extends android.webkit.WebViewClient {
+
+        private Activity activity = null;
+
+        public WebViewClientImpl(Activity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+            if (url.contains("magazinevoce.com.br")) return false;
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+            activity.startActivity(intent);
+
+            return true;
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+
+            super.onPageFinished(view, url);
+
+            swipeLayout.setRefreshing(false);
+        }
+
+    }
 
 }
 //+-------------------------------------------------------------------------------------------------------+
@@ -148,3 +208,6 @@ public class MainActivity extends AppCompatActivity {
 //! Exemplo de código para solicitar permissões no Android M (6.0 Marchmellow) (Visualizado em 30/03/2019 |
 //| https://gist.github.com/elcioabrahao/7a1f18b08eb252ccf2dd                                             |
 //+-------------------------------------------------------------------------------------------------------+
+
+
+
