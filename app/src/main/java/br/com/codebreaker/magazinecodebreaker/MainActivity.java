@@ -18,6 +18,10 @@ package br.com.codebreaker.magazinecodebreaker;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -26,8 +30,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
+
+import java.io.File;
 
 
 //+---------------------------------------------------------------------+
@@ -62,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         WebSettings configNavegador = navegadorWeb.getSettings();
         configNavegador.setJavaScriptEnabled(true); // Acessar JavaScript
         configNavegador.setAllowUniversalAccessFromFileURLs(true); // Permitir que o JavaScript acesse conteúdo de outras URLs, no caso da loje virtual, como o site já vem pronto, é melhor deixar ativo para não comprometer alguma funcionalidade
-        configNavegador.setAppCacheEnabled(true); // Ativa Chache
+        configNavegador.setAppCacheEnabled(true); // Ativa Cache
         configNavegador.setDomStorageEnabled(true); // Ativa Acesso a Sites seguros, como, por exemplo SSL / https://
 
 
@@ -122,8 +132,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
+
+        // por motivo de segurança, todos os dados são apagados, assim ninguem acessa suas compras
+        ((ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
     }
 
 
