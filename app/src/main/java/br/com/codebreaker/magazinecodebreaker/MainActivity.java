@@ -19,29 +19,25 @@ package br.com.codebreaker.magazinecodebreaker;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
 
-import java.io.File;
 
 
 //+---------------------------------------------------------------------+
@@ -88,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 navegadorWeb.reload();
             }
         });
+
+
 
     }
 
@@ -149,13 +147,59 @@ public class MainActivity extends AppCompatActivity {
 
         super.onPause();
 
+        notificacao();
+
+
         // por motivo de segurança, todos os dados são apagados, assim ninguem acessa suas compras
-        ((ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
+        //((ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
 
     }
 
+//+-------------------------------------------------------------------------------------------+
+//|                                                                     MagazineCodeBreaker   |
+//|                                                              Copyright 2019, CodeBreaker  |
+//|                                                            http://www.codebreaker.com.br  |
+//|                                                                                           |
+//| Conteúdo retirado do site:                                                                |
+//| Implementando uma Notificação simples no Android (Visualizado em 06-04-2019)              |
+//| https://www.treinaweb.com.br/blog/implementando-uma-notificacao-simples-no-android/       |
+//+-------------------------------------------------------------------------------------------+
 
-    //+---------------------------------------------------------------------+
+    public void notificacao() {
+
+        int id = 1;
+        String titulo = "Magazine CodeBreaker";
+        String texto = "Para a sua segurança, após utilizar, faça o Logout.";
+        int icone = R.drawable.ic_shopping_cart_black_24dp;
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent p = getPendingIntent(id, intent, this);
+
+        NotificationCompat.Builder criarNotification = new NotificationCompat.Builder(this);
+
+        criarNotification.setSmallIcon(icone);
+        criarNotification.setContentTitle(titulo);
+        criarNotification.setContentText(texto);
+        criarNotification.setContentIntent(p);
+
+        NotificationManagerCompat minhaNotification = NotificationManagerCompat.from(this);
+
+        minhaNotification.notify(id, criarNotification.build());
+
+    }
+
+    private PendingIntent getPendingIntent(int id, Intent intent, Context context) {
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(intent.getComponent());
+        stackBuilder.addNextIntent(intent);
+
+        PendingIntent p = stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return p;
+    }
+
+
+//+---------------------------------------------------------------------+
 //|                                               MagazineCodeBreaker   |
 //|                                        Copyright 2019, CodeBreaker  |
 //|                                      http://www.codebreaker.com.br  |
