@@ -19,11 +19,8 @@ package br.com.codebreaker.magazinecodebreaker;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,7 +28,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -150,9 +146,6 @@ public class MainActivity extends AppCompatActivity {
 
         notificationLogout();
 
-        // por motivo de segurança, todos os dados são apagados, assim ninguem acessa suas compras
-        //((ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
-
     }
 
 //+-------------------------------------------------------------------------------------------+
@@ -172,15 +165,21 @@ public class MainActivity extends AppCompatActivity {
         String titulo = "Magazine CodeBreaker";
         String texto = "Deseja limpar os dados de acesso a sua conta?";
 
-        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent notificationIntent = new Intent(getApplicationContext(), LimparCache.class);
+        notificationIntent.putExtra("action", "limpar");
+        PendingIntent contentIntent = PendingIntent.getBroadcast(getApplicationContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(icone, "Click para Limpar", contentIntent).build();
 
         NotificationCompat.Builder criarNotification = new NotificationCompat.Builder(getApplicationContext());
         criarNotification.setSmallIcon(icone);
         criarNotification.setContentTitle(titulo);
         criarNotification.setContentText(texto);
 
+        criarNotification.addAction(action);
+
         criarNotification.setPriority(NotificationCompat.PRIORITY_MAX);
+        criarNotification.setOngoing(true);
         criarNotification.setContentIntent(contentIntent);
 
         NotificationManager gerenciarNotification = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
