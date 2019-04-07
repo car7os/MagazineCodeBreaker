@@ -19,6 +19,9 @@ package br.com.codebreaker.magazinecodebreaker;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
@@ -37,7 +40,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-
 
 
 //+---------------------------------------------------------------------+
@@ -84,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
                 navegadorWeb.reload();
             }
         });
-
 
 
     }
@@ -147,8 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onPause();
 
-        notificacao();
-
+        notificationLogout();
 
         // por motivo de segurança, todos os dados são apagados, assim ninguem acessa suas compras
         //((ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
@@ -165,37 +165,27 @@ public class MainActivity extends AppCompatActivity {
 //| https://www.treinaweb.com.br/blog/implementando-uma-notificacao-simples-no-android/       |
 //+-------------------------------------------------------------------------------------------+
 
-    public void notificacao() {
+    public void notificationLogout() {
 
         int id = 1;
-        String titulo = "Magazine CodeBreaker";
-        String texto = "Para a sua segurança, após utilizar, faça o Logout.";
         int icone = R.drawable.ic_shopping_cart_black_24dp;
+        String titulo = "Magazine CodeBreaker";
+        String texto = "Deseja limpar os dados de acesso a sua conta?";
 
-        Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent p = getPendingIntent(id, intent, this);
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder criarNotification = new NotificationCompat.Builder(this);
-
+        NotificationCompat.Builder criarNotification = new NotificationCompat.Builder(getApplicationContext());
         criarNotification.setSmallIcon(icone);
         criarNotification.setContentTitle(titulo);
         criarNotification.setContentText(texto);
-        criarNotification.setContentIntent(p);
 
-        NotificationManagerCompat minhaNotification = NotificationManagerCompat.from(this);
+        criarNotification.setPriority(NotificationCompat.PRIORITY_MAX);
+        criarNotification.setContentIntent(contentIntent);
 
-        minhaNotification.notify(id, criarNotification.build());
+        NotificationManager gerenciarNotification = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        gerenciarNotification.notify(id, criarNotification.build());
 
-    }
-
-    private PendingIntent getPendingIntent(int id, Intent intent, Context context) {
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(intent.getComponent());
-        stackBuilder.addNextIntent(intent);
-
-        PendingIntent p = stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        return p;
     }
 
 
