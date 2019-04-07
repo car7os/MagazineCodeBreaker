@@ -1,26 +1,26 @@
-//+---------------------------------------------------------------------+
-//|                                               MagazineCodeBreaker   |
-//|                                        Copyright 2019, CodeBreaker  |
-//|                                      http://www.codebreaker.com.br  |
-//|                                                                     |
-//| Referencias bibliograficas no final do arquivo.                     |
-//+---------------------------------------------------------------------+
+//+-------------------------------------------------------------------------------------------------------+
+//|                                                                                 MagazineCodeBreaker   |
+//|                                                                          Copyright 2019, CodeBreaker  |
+//|                                                                        http://www.codebreaker.com.br  |
+//|                                                                                                       |
+//| Referencias bibliograficas no final do arquivo.                                                       |
+//+-------------------------------------------------------------------------------------------------------+
 
-//+---------------------------------------------------------------------+
-//| Pacote / Diretório da Classe                                        |
-//+---------------------------------------------------------------------+
+//+-------------------------------------------------------------------------------------------------------+
+//| Pacote / Diretório da Classe                                                                          |
+//+-------------------------------------------------------------------------------------------------------+
 
 package br.com.codebreaker.magazinecodebreaker;
 
-//+---------------------------------------------------------------------+
-//| Bibliotecas Necessárias                                             |
-//+---------------------------------------------------------------------+
+//+-------------------------------------------------------------------------------------------------------+
+//| Bibliotecas Necessárias                                                                               |
+//+-------------------------------------------------------------------------------------------------------+
 
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,10 +38,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 
-
-//+---------------------------------------------------------------------+
-//| Classe Principal
-//+---------------------------------------------------------------------+
+//+-------------------------------------------------------------------------------------------------------+
+//| Classe Principal                                                                                      |
+//+-------------------------------------------------------------------------------------------------------+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,13 +64,16 @@ public class MainActivity extends AppCompatActivity {
 
         // configurando o WebView
         navegadorWeb = (WebView) findViewById(R.id.webview);
-        navegadorWeb.setWebViewClient(webViewClient); // Ao clicar nos links, não deixa acessar um navegador externo, fazendo com que todas as operações permaneçam dentro do seu aplicativo
+        // Ao clicar nos links, não deixa acessar um navegador externo, fazendo com que todas as operações permaneçam dentro do seu aplicativo
+        navegadorWeb.setWebViewClient(webViewClient);
 
         navegadorWeb.loadUrl(enderecoSite); // Carregar Site
         // Ajustar Configurações
         WebSettings configNavegador = navegadorWeb.getSettings();
         configNavegador.setJavaScriptEnabled(true); // Acessar JavaScript
-        configNavegador.setAllowUniversalAccessFromFileURLs(true); // Permitir que o JavaScript acesse conteúdo de outras URLs, no caso da loje virtual, como o site já vem pronto, é melhor deixar ativo para não comprometer alguma funcionalidade
+
+        // Permitir que o JavaScript acesse conteúdo de outras URLs, no caso da loje virtual, como o site já vem pronto, é melhor deixar ativo para não comprometer alguma funcionalidade
+        configNavegador.setAllowUniversalAccessFromFileURLs(true);
         configNavegador.setAppCacheEnabled(true); // Ativa Cache
         configNavegador.setDomStorageEnabled(true); // Ativa Acesso a Sites seguros, como, por exemplo SSL / https://
 
@@ -84,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 navegadorWeb.reload();
             }
         });
-
 
 
     }
@@ -144,75 +144,60 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-
         super.onPause();
 
-        notificacao();
-
-
-        // por motivo de segurança, todos os dados são apagados, assim ninguem acessa suas compras
-        //((ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
-
+        notificationLogout();
     }
 
-//+-------------------------------------------------------------------------------------------+
-//|                                                                     MagazineCodeBreaker   |
-//|                                                              Copyright 2019, CodeBreaker  |
-//|                                                            http://www.codebreaker.com.br  |
-//|                                                                                           |
-//| Conteúdo retirado do site:                                                                |
-//| Implementando uma Notificação simples no Android (Visualizado em 06-04-2019)              |
-//| https://www.treinaweb.com.br/blog/implementando-uma-notificacao-simples-no-android/       |
-//+-------------------------------------------------------------------------------------------+
 
-    public void notificacao() {
+    public void notificationLogout() {
 
         int id = 1;
-        String titulo = "Magazine CodeBreaker";
-        String texto = "Para a sua segurança, após utilizar, faça o Logout.";
         int icone = R.drawable.ic_shopping_cart_black_24dp;
+        String titulo = "Magazine CodeBreaker";
+        String texto = "Deseja limpar os dados de acesso a sua conta?";
 
-        Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent p = getPendingIntent(id, intent, this);
+        Intent notificationIntent = new Intent(getApplicationContext(), LimparCache.class);
+        notificationIntent.putExtra("action", "limpar");
+        PendingIntent contentIntent = PendingIntent.getBroadcast(getApplicationContext(), id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder criarNotification = new NotificationCompat.Builder(this);
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(icone, "Click para Limpar", contentIntent).build();
 
+        NotificationCompat.Builder criarNotification = new NotificationCompat.Builder(getApplicationContext());
         criarNotification.setSmallIcon(icone);
         criarNotification.setContentTitle(titulo);
         criarNotification.setContentText(texto);
-        criarNotification.setContentIntent(p);
 
-        NotificationManagerCompat minhaNotification = NotificationManagerCompat.from(this);
+        criarNotification.addAction(action);
 
-        minhaNotification.notify(id, criarNotification.build());
+        criarNotification.setPriority(NotificationCompat.PRIORITY_MAX);
+        criarNotification.setOngoing(true);
+        criarNotification.setContentIntent(contentIntent);
+
+        NotificationManager gerenciarNotification = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        gerenciarNotification.notify(id, criarNotification.build());
 
     }
 
-    private PendingIntent getPendingIntent(int id, Intent intent, Context context) {
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(intent.getComponent());
-        stackBuilder.addNextIntent(intent);
 
-        PendingIntent p = stackBuilder.getPendingIntent(id, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        return p;
-    }
-
-
-//+---------------------------------------------------------------------+
-//|                                               MagazineCodeBreaker   |
-//|                                        Copyright 2019, CodeBreaker  |
-//|                                      http://www.codebreaker.com.br  |
-//|                                                                     |
-//| Conteúdo retirado do site:                                          |
-//| https://www.androidpro.com.br/blog/desenvolvimento-android/webview-converter-site-aplicativo/
-//+---------------------------------------------------------------------+
+//+-------------------------------------------------------------------------------------------------------+
+//|                                                                                 MagazineCodeBreaker   |
+//|                                                                          Copyright 2019, CodeBreaker  |
+//|                                                                        http://www.codebreaker.com.br  |
+//|                                                                                                       |
+//| Conteúdo retirado do site:                                                                            |
+//| https://www.androidpro.com.br/blog/desenvolvimento-android/webview-converter-site-aplicativo/         |
+//+-------------------------------------------------------------------------------------------------------+
 
     /**
      * Esta Classe faz com que toda a atividade do WebView permaneçam no próprio WebView.
      * Ao clicar nos links, não deixa acessar um navegador externo, fazendo com que todas
      * as operações permaneçam dentro do seu aplicativo
      */
+
+//+-------------------------------------------------------------------------------------------------------+
+//| Classe WebViewClientImpl                                                                              |
+//+-------------------------------------------------------------------------------------------------------+
 
 
     public class WebViewClientImpl extends android.webkit.WebViewClient {
@@ -245,13 +230,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
 //+-------------------------------------------------------------------------------------------------------+
+//|                                                                                 MagazineCodeBreaker   |
+//|                                                                          Copyright 2019, CodeBreaker  |
+//|                                                                        http://www.codebreaker.com.br  |
+//|                                                                                                       |
 //|                                                                    Referencias Bibliograficas         |
 //| WebView - Convertendo Site em Aplicativo, AndroidPro (Visualizado em 27/03/2019)                      |
 //| https://www.androidpro.com.br/blog/desenvolvimento-android/webview-converter-site-aplicativo/         |
+//|                                                                                                       |
 //! Exemplo de código para solicitar permissões no Android M (6.0 Marchmellow) (Visualizado em 30/03/2019 |
 //| https://gist.github.com/elcioabrahao/7a1f18b08eb252ccf2dd                                             |
+//|                                                                                                       |
+//| Implementando uma Notificação simples no Android (Visualizado em 06-04-2019)                          |
+//| https://www.treinaweb.com.br/blog/implementando-uma-notificacao-simples-no-android/                   |
 //+-------------------------------------------------------------------------------------------------------+
-
-
-
