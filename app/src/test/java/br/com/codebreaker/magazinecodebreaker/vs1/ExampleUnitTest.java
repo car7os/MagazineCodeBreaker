@@ -1,4 +1,4 @@
-package br.com.codebreaker.magazinecodebreaker;
+package br.com.codebreaker.magazinecodebreaker.vs1;
 
 import org.junit.Test;
 

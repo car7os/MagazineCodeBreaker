@@ -10,7 +10,7 @@
 //| Pacote / Diretório da Classe                                                                          |
 //+-------------------------------------------------------------------------------------------------------+
 
-package br.com.codebreaker.magazinecodebreaker;
+package br.com.codebreaker.magazinecodebreaker.vs1;
 
 //+-------------------------------------------------------------------------------------------------------+
 //| Bibliotecas Necessárias                                                                               |

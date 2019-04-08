@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.codebreaker.magazinecodebreaker">
+    package="br.com.codebreaker.magazinecodebreaker.vs1">
 
 
     <uses-permission android:name="android.permission.INTERNET"/>
